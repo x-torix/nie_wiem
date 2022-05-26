@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body onload="init()">
+    <div id="header">
+        <label for="nameInput">Podaj imię: </label>
+        <input type="text" name="" id="nameInput">
+        <button onclick="saveName()">Zapisz</button>
+    </div>
+    <div id="taskList">
+        <ul>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+ 
+    </div>
+ 
+    <label for="newTask">Nowe zadanie</label>
+    <input type="text" id="newTask">
+    <button onclick="addTask()">Dodaj</button>
+ 
+ 
+    <script>
+        function init() {
+            //jeżeli w localstorage znajduje się zapisane imię
+            if (window.localStorage.getItem('name') != null) {
+                //pobierz imie z localstorage
+                let name = window.localStorage.getItem("name");
+                //wygeneruj tekst przywitania
+                let greeting = "<h1>Witaj " + name + "!</h1>";
+                //zastąp formularz przywitaniem
+                document.getElementById('header').innerHTML = greeting;
+                if (localStorage.getItem('jsonArray') == null)
+                    localStorage.setItem('jsomArray', JSON.stringify(Array()));
+                showTasks();
+            }
+        }
+        function saveName() {
+            //pobierz imię z input i zapisz do lokalnej zmiennej name
+            let name = document.getElementById('nameInput').value;
+            //zapisz imię do localStorage
+            window.localStorage.setItem("name", name);
+            //wywołaj init żeby odświeżyć stronę
+            init();
+        }
+        function addTask() {
+            //pobierz nowe zadanie z input
+            let task = document.getElementById('newTask').value;
+            //poierz poprzednie z localstorage
+            let jsonArray = localStorage.getItem('jsonArray');
+            //stwórz psuta tablicę na zadnia
+            let taskArray = Array();
+            //pobierz poprzednie zadnaia jeśli jakieś są        
+            if (jsonArray != null)
+                taskArray = JSON.parse(jsonArray);
+            //dodaj zadanie do tablicy
+            taskArray.push(task);
+            //zamien na JSON 
+            jsonArray = JSON.stringify(taskArray);
+            //zapisz do localstorage
+            window.localStorage.setItem('jsonArray', jsonArray);
+        }
+        function showTasks() {
+            //pobierz liste i skonwertuj do tablicy
+            let taskArray = JSON.parse(localStorage.getItem('jsonArray'));
+            //tworzymy bufor na kod html
+            let htmlBuffer = '<ul>';
+            //przechodzimy pętlą przez całą tablicę
+            for (let i = 0; i < taskArray.length; i++) {
+                //dodaj linię ze sprawą do załatwienia zapakowaną w li
+                htmlBuffer += "<li>" + taskArray[i] + "</li>";
+                    //dodaj guzik do usuwania z zakodowanym idnexem
+                    "<button onclick=remoeTask("+i+")>Usuń</button>"
+            }
+            //zamknij listę
+            htmlBuffer += "</ul>";
+            // wstaw wynikowy kod html do diva
+            document.getElementById('taskList').innerHTML = htmlBuffer;
+
+            function removeTask(index) {
+                //pobierz liste i skonwetuj do tablicy
+                let taskArray = JSON.parse(localStorage.getItem('jsonArray'));
+                //usuń jeden elemetn na indeksie "index"
+                taskArray.splice(index, 1);
+                //zamień json i zapisz do localstorage
+                localStorage.setItem('jsonArray', JSON.stringify(taskArray));
+                //odświerz liste
+                showTasks
+            }
+            function clearTask() {
+                //zapisz pustą tablice do localstorage
+                localStorage.setItem('jsonArray', JSON.stringify(Array()))
+                //odświerz liste
+                showTasks();
+            }
+        }
+    </script>
+</body>
+</html>
